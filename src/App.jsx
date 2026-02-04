@@ -95,35 +95,51 @@ export default function App() {
           </svg>
 
           {[data.root, ...data.nodes].map(node => {
-            const isVisible = node.type !== 'product' || hoveredNodeId === node.parent;
-            if (!isVisible) return null;
+          const isVisible = node.type !== 'product' || hoveredNodeId === node.parent;
+          if (!isVisible) return null;
 
-            return (
-              <div 
-                key={node.id} 
-                onMouseEnter={() => node.type !== 'product' && setHoveredNodeId(node.id)}
-                className={`absolute transition-all duration-300 border-2 
-                  ${node.type === 'product' 
-                    ? `w-56 bg-slate-900/90 backdrop-blur-sm rounded-xl overflow-hidden -ml-28 -mt-32 p-0 ${getColorByStock(node.stock)}` 
-                    : 'w-48 h-16 bg-slate-900 border-blue-600 rounded-full flex items-center justify-center -ml-24 -mt-8'
-                  }`}
-                style={{ left: node.x+5000, top: node.y+5000 }}>
-                
-                {node.type === 'product' ? (
-                  <div className="flex flex-col">
-                    <img src={node.img} alt="" className="w-full h-28 object-cover border-b border-white/10" />
-                    <div className="p-3">
-                      <div className="text-xs font-black truncate mb-1">{node.label}</div>
-                      <div className="text-blue-400 font-mono text-sm">{node.price}</div>
-                      <div className="mt-2 text-[9px] uppercase tracking-tighter opacity-70">Stock Level: {node.stock} units</div>
-                    </div>
+          // Stílus meghatározása típus szerint
+          const isProduct = node.type === 'product';
+          const isRoot = node.id === 'root';
+          
+          return (
+            <div 
+              key={node.id} 
+              onMouseEnter={() => node.type !== 'product' && setHoveredNodeId(node.id)}
+              className={`absolute transition-all duration-200 border-2 z-10
+                ${isProduct 
+                  ? `w-48 bg-slate-900 shadow-2xl rounded-lg -ml-24 -mt-32 p-0 ${getColorByStock(node.stock)}` 
+                  : isRoot
+                    ? 'w-32 h-32 bg-blue-600/20 border-blue-500 rounded-none flex items-center justify-center -ml-16 -mt-16 ring-4 ring-blue-500/30'
+                    : 'w-40 h-12 bg-slate-800 border-slate-500 rounded-none flex items-center justify-center -ml-20 -mt-6 hover:border-blue-400 hover:bg-slate-700'
+                }`}
+              style={{ 
+                left: node.x + 5000, 
+                top: node.y + 5000,
+                // Kicsi skálázás effekt, amikor megjelenik
+                transform: `scale(${isProduct ? 1 : 1})`,
+              }}>
+              
+              {isProduct ? (
+                <div className="flex flex-col">
+                  {node.img && <img src={node.img} alt="" className="w-full h-24 object-cover" />}
+                  <div className="p-2 bg-black/60">
+                    <div className="text-[10px] font-bold truncate leading-tight">{node.label}</div>
+                    <div className="text-blue-400 font-mono text-[11px] mt-1">{node.price}</div>
                   </div>
-                ) : (
-                  <span className="text-xs font-bold uppercase tracking-widest text-center px-4">{node.label}</span>
-                )}
-              </div>
-            );
-          })}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <span className="text-[10px] font-black uppercase tracking-tighter text-center px-2">
+                    {node.label}
+                  </span>
+                  {/* Kis dekoratív elem, hogy technikaibb legyen */}
+                  <div className="w-full h-[1px] bg-white/10 mt-1" />
+                </div>
+              )}
+            </div>
+          );
+        })}
         </div>
       </div>
     </div>
